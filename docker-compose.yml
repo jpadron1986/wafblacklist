@@ -7,16 +7,10 @@ services:
       - nwaf
     ports:
       - "80:80"
-      - "443:443"
+
     volumes:
       - ./app:/usr/share/nginx/html
-  redis:
-    image: "redis:alpine"
-    hostname: redis
-    networks:
-      - nwaf
-    ports:
-      - "6379:6379"
+
 volumes:
   app:
 networks:
