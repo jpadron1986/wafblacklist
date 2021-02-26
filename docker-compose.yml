@@ -1,58 +1,22 @@
 version: "3.5"
 services:
-  traefik:
-    image: "traefik:v2.3"
-    container_name: "traefik"
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.entregas.acme.email=soporte@multicuba.com"
-      - "--certificatesresolvers.entregas.acme.storage=/letsencrypt/acme.json"
-      - "--certificatesresolvers.entregas.acme.httpchallenge.entrypoint=web"
-      - "--pilot.token=a6a03edf-b94b-431f-96f4-028af7c50096"
+  waf:
+    image: jpadron1986/ngwaf
+    container_name: nginx
     networks:
       - nwaf
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - "./letsencrypt:/letsencrypt"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    labels:
-      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
-      - "traefik.http.routers.http-catchall.entrypoints=web"
-      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.latency-check.circuitbreaker.expression=LatencyAtQuantileMS(50.0) > 100" # No llamar a servicios insalubres
-      - "traefik.http.middlewares.test-compress.compress=true" # Comprimir la respuesta antes de enviarla al cliente
-      - "traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=2000000" #Sets the maximum request body to 2Mb
-      - "traefik.http.middlewares.autodetect.contenttype.autodetect=false" #Manejo de la detección automática de ContentType
-      - "traefik.http.middlewares.test-inflightreq.inflightreq.amount=10" #Limitar el número
-
-  waf:
-    image: jpadron1986/ngwaf
-    container_name: nginx
+      - ./app:/usr/share/nginx/html
+  redis:
+    image: "redis:alpine"
+    hostname: redis
     networks:
       - nwaf
-    volumes:
-      - ./app:/usr/share/nginx/html
-    labels:
-      - "traefik.enable=true"
-      - 'traefik.http.routers.waf.rule=Host(`mqtt.entregascuba.com`)'
-      - "traefik.http.routers.waf.entrypoints=websecure"
-      - "traefik.http.routers.waf.tls=true"
-      - "traefik.http.routers.waf.tls.certresolver=entregas"
-      - "traefik.http.middlewares.latency-check.circuitbreaker.expression=LatencyAtQuantileMS(50.0) > 100" # No llamar a servicios insalubres
-      - "traefik.http.middlewares.test-compress.compress=true" # Comprimir la respuesta antes de enviarla al cliente
-      - "traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=2000000" #Sets the maximum request body to 2Mb
-      - "traefik.http.middlewares.autodetect.contenttype.autodetect=false" #Manejo de la detección automática de ContentType
-      - "traefik.http.middlewares.test-inflightreq.inflightreq.amount=10" #Limitar el número
-
+    ports:
+      - "6379:6379"
 volumes:
   app:
 networks:
