@@ -43,11 +43,8 @@ RUN git clone -b ${OWASP_BRANCH} --depth 1 https://github.com/coreruleset/coreru
 RUN wget -O - https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz | tar -xz 
     
 # Install ModSecurity and Nginx modules
-RUN echo 'Installing Nginx Modules' && \
-    (cd "/opt/nginx-$NGINX_VERSION" \
-        ./configure --with-compat --add-dynamic-module=../ModSecurity-nginx \
-        make modules \
-    ) && \
+RUN echo 'Installing Nginx Modules'
+RUN cd "/opt/nginx-$NGINX_VERSION" && ./configure --with-compat --add-dynamic-module=../ModSecurity-nginx && make modules && \
     cp /opt/nginx-$NGINX_VERSION/objs/ngx_http_modsecurity_module.so /usr/lib/nginx/modules/ && \
     rm -fr /opt/* && \
     apk del general-dependencies
@@ -78,8 +75,8 @@ RUN apk add --no-cache \
     libxml2-dev \
     lmdb-dev \
     tzdata \
-    yajl && \
-    chown -R nginx:nginx /usr/share/nginx
+    yajl && chown -R nginx:nginx /usr/share/nginx
+    
 
 WORKDIR /usr/share/nginx/html
 
