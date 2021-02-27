@@ -1,7 +1,6 @@
 ARG NGINX_VER=1.19.3
 FROM nginx:${NGINX_VER}-alpine as build_modsecurity
 
-
 ARG GEO_DB_RELEASE=2020-10
 ARG MODSEC_BRANCH=v3.0.4
 ARG OWASP_BRANCH=v3.3/master
@@ -12,16 +11,11 @@ WORKDIR /opt
 # curl, libxml, pcre, and lmdb and Modsec
 RUN echo "Installing Dependencies" && \
     apk add --no-cache --virtual general-dependencies \
-    fail2ban autoconf automake byacc curl-dev flex g++ gcc git \
+    fail2ban autoconf automake byacc curl-dev flex g++ gcc geoip-dev git \
     libc-dev libmaxminddb-dev libstdc++ libtool libxml2-dev linux-headers \
     lmdb-dev make openssl-dev pcre-dev yajl-dev zlib-dev && \
     rm -rf /var/cache/apk/*
-RUN apk add --no-cache bash less yaml zip \
-    php7-fpm php7-json php7-zlib php7-xml php7-pdo php7-phar php7-openssl \
-    php7-gd php7-iconv php7-mcrypt php7-session php7-zip \
-    php7-curl php7-opcache php7-ctype php7-apcu \
-    php7-intl php7-bcmath php7-dom php7-mbstring php7-simplexml php7-xmlreader && \
-    rm -rf /var/cache/apk/*
+
 # Clone and compile modsecurity. Binary will be located in /usr/local/modsecurity
 RUN echo "Installing ModSec Library" && \
     git clone -b ${MODSEC_BRANCH} --depth 1 https://github.com/SpiderLabs/ModSecurity && \
@@ -37,24 +31,33 @@ RUN echo "Installing ModSec Library" && \
         /usr/local/modsecurity/lib/libmodsecurity.la
 
 # Clone Modsec Nginx Connector, GeoIP, ModSec OWASP Rules, and download/extract nginx and GeoIP databases
-RUN echo 'Cloning Modsec Nginx Connector, GeoIP, ModSec OWASP Rules, and download/extract nginx and GeoIP databases'
-RUN git clone -b master --depth 1 https://github.com/SpiderLabs/ModSecurity-nginx.git
-RUN git clone -b ${OWASP_BRANCH} --depth 1 https://github.com/coreruleset/coreruleset.git /usr/local/owasp-modsecurity-crs
-RUN wget -O - https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz | tar -xz 
-    
-# Install ModSecurity and Nginx modules
-RUN echo 'Installing Nginx Modules'
-RUN cd "/opt/nginx-$NGINX_VERSION" && ./configure --with-compat --add-dynamic-module=../ModSecurity-nginx && make modules && \
-    cp /opt/nginx-$NGINX_VERSION/objs/ngx_http_modsecurity_module.so /usr/lib/nginx/modules/ && \
+RUN echo 'Cloning Modsec Nginx Connector, GeoIP, ModSec OWASP Rules, and download/extract nginx and GeoIP databases' && \
+    git clone -b master --depth 1 https://github.com/SpiderLabs/ModSecurity-nginx.git && \
+    git clone -b master --depth 1 https://github.com/leev/ngx_http_geoip2_module.git && \
+    git clone -b ${OWASP_BRANCH} --depth 1 https://github.com/coreruleset/coreruleset.git /usr/local/owasp-modsecurity-crs && \
+    wget -O - https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz | tar -xz && \
+    mkdir -p /etc/nginx/geoip && \
+    wget -O - https://download.db-ip.com/free/dbip-city-lite-${GEO_DB_RELEASE}.mmdb.gz | gzip -d > /etc/nginx/geoip/dbip-city-lite.mmdb && \
+    wget -O - https://download.db-ip.com/free/dbip-country-lite-${GEO_DB_RELEASE}.mmdb.gz | gzip -d > /etc/nginx/geoip/dbip-country-lite.mmdb
+
+# Install GeoIP2 and ModSecurity Nginx modules
+RUN echo 'Installing Nginx Modules' && \
+    (cd "/opt/nginx-$NGINX_VERSION" && \
+        ./configure --with-compat \
+            --add-dynamic-module=../ModSecurity-nginx \
+            --add-dynamic-module=../ngx_http_geoip2_module && \
+        make modules \
+    ) && \
+    cp /opt/nginx-$NGINX_VERSION/objs/ngx_http_modsecurity_module.so \
+        /opt/nginx-$NGINX_VERSION/objs/ngx_http_geoip2_module.so \
+        /usr/lib/nginx/modules/ && \
     rm -fr /opt/* && \
     apk del general-dependencies
 
 
 FROM nginx:${NGINX_VER}-alpine
-LABEL maintainer="Jorge Padron <jpadron1986@gmail.com>"
-ENV TZ=America/New_York
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+LABEL maintainer="Jorge Padron <jpadron1986@gmail.com>"
 
 # Copy nginx, owasp-modsecurity-crs, and modsecurity from the build image
 COPY --from=build_modsecurity /etc/nginx/ /etc/nginx/
@@ -75,8 +78,8 @@ RUN apk add --no-cache \
     libxml2-dev \
     lmdb-dev \
     tzdata \
-    yajl && chown -R nginx:nginx /usr/share/nginx
-    
+    yajl && \
+    chown -R nginx:nginx /usr/share/nginx
 
 WORKDIR /usr/share/nginx/html
 
