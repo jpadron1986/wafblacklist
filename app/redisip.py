@@ -17,93 +17,104 @@ filename = "./app/file/fireholLevel1"
 for line in (l.strip() for l in open(filename) if not l.startswith('#') and l.strip()):
      r.sadd('ips', line)
 
+# torlist
+url = "https://www.dan.me.uk/torlist/"
+respuesta = urllib.request.urlopen(url)
+contenido = respuesta.read()
+file = open("./app/file/torlist", "w") 
+file.write(str(contenido))
+file.close()
+filename = "./app/file/torlist"
+for line in (l.strip() for l in open(filename) if not l.startswith('#') and l.strip()):
+     r.sadd('ips', line)
+
 # Honeypot
-url0 = "https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1"
-respuesta0 = urllib.request.urlopen(url0)
-contenido0 = respuesta0.read()
-file0 = open("./app/file/honeypot", "w") 
-file0.write(str(contenido0))
-file0.close()
-filename0 = "./app/file/honeypot"
-for line0 in (l.strip() for l in open(filename0) if not l.startswith('#') and l.strip()):
-     r.sadd('ips', line0)
+url = "https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1"
+respuesta = urllib.request.urlopen(url)
+contenido = respuesta.read()
+file = open("./app/file/honeypot", "w") 
+file.write(str(contenido))
+file.close()
+filename = "./app/file/honeypot"
+for line in (l.strip() for l in open(filename) if not l.startswith('#') and l.strip()):
+     r.sadd('ips', line)
 
 # Danger rulez
-url1 = "http://danger.rulez.sk/projects/bruteforceblocker/blist.php"
-respuesta1 = urllib.request.urlopen(url1)
-contenido1 = respuesta1.read()
-file1 = open("./app/file/blist", "w") 
-file1.write(str(contenido1))
-file1.close()
-filename1 = "./app/file/blist"
-for line1 in (l.strip() for l in open(filename1) if not l.startswith('#') and l.strip()):
-     r.sadd('ips', line1)
+url = "http://danger.rulez.sk/projects/bruteforceblocker/blist.php"
+respuesta = urllib.request.urlopen(url)
+contenido = respuesta.read()
+file = open("./app/file/blist", "w") 
+file.write(str(contenido))
+file.close()
+filename = "./app/file/blist"
+for line in (l.strip() for l in open(filename) if not l.startswith('#') and l.strip()):
+     r.sadd('ips', line)
 
 # Spamhaus
-url2 = "https://www.spamhaus.org/drop/drop.lasso"
-respuesta2 = urllib.request.urlopen(url2)
-contenido2 = respuesta2.read()
-file2 = open("./app/file/drop", "w") 
-file2.write(str(contenido1))
-file2.close()
-filename2 = "./app/file/drop"
-for line2 in (l.strip() for l in open(filename2) if not l.startswith('#') and l.strip()):
-     r.sadd('ips', line2)
+url = "https://www.spamhaus.org/drop/drop.lasso"
+respuesta = urllib.request.urlopen(url)
+contenido = respuesta.read()
+file = open("./app/file/drop", "w") 
+file.write(str(contenido))
+file.close()
+filename = "./app/file/drop"
+for line in (l.strip() for l in open(filename) if not l.startswith('#') and l.strip()):
+     r.sadd('ips', line)
 
 # Cinsscore
-url3 = "https://cinsscore.com/list/ci-badguys.txt"
-respuesta3 = urllib.request.urlopen(url3)
-contenido3 = respuesta3.read()
-file3 = open("./app/file/ci-badguys", "w") 
-file3.write(str(contenido3))
-file3.close()
-filename3 = "./app/file/ci-badguys"
-for line3 in (l.strip() for l in open(filename3) if not l.startswith('#') and l.strip()):
-     r.sadd('ips', line3)
+url = "https://cinsscore.com/list/ci-badguys.txt"
+respuesta = urllib.request.urlopen(url)
+contenido = respuesta.read()
+file = open("./app/file/ci-badguys", "w") 
+file.write(str(contenido))
+file.close()
+filename = "./app/file/ci-badguys"
+for line in (l.strip() for l in open(filename) if not l.startswith('#') and l.strip()):
+     r.sadd('ips', line)
 
 # Blacklist.de
-url4 = "https://lists.blocklist.de/lists/all.txt"
-respuesta4 = urllib.request.urlopen(url4)
-contenido4 = respuesta4.read()
-file4 = open("./app/file/all", "w") 
-file4.write(str(contenido4))
-file4.close()
-filename4 = "./app/file/all"
-for line4 in (l.strip() for l in open(filename4) if not l.startswith('#') and l.strip()):
-     r.sadd('ips', line4)
+url = "https://lists.blocklist.de/lists/all.txt"
+respuesta = urllib.request.urlopen(url)
+contenido = respuesta.read()
+file = open("./app/file/all", "w") 
+file.write(str(contenido))
+file.close()
+filename = "./app/file/all"
+for line in (l.strip() for l in open(filename) if not l.startswith('#') and l.strip()):
+     r.sadd('ips', line)
 
 # Greensnow
-url5 = "https://blocklist.greensnow.co/greensnow.txt"
-respuesta5 = urllib.request.urlopen(url5)
-contenido5 = respuesta5.read()
-file5 = open("./app/file/greensnow", "w") 
-file5.write(str(contenido5))
-file5.close()
-filename5 = "./app/file/greensnow"
-for line5 in (l.strip() for l in open(filename5) if not l.startswith('#') and l.strip()):
-     r.sadd('ips', line5)
+url = "https://blocklist.greensnow.co/greensnow.txt"
+respuesta = urllib.request.urlopen(url)
+contenido = respuesta.read()
+file = open("./app/file/greensnow", "w") 
+file.write(str(contenido))
+file.close()
+filename = "./app/file/greensnow"
+for line in (l.strip() for l in open(filename) if not l.startswith('#') and l.strip()):
+     r.sadd('ips', line)
 
 # Talos
-url6 = "https://www.talosintelligence.com/documents/ip-blacklist"
-respuesta6 = urllib.request.urlopen(url6)
-contenido6 = respuesta6.read()
-file6 = open("./app/file/talos", "w")
-file6.write(str(contenido5))
-file6.close()
-filename6 = "./app/file/talos"
-for line6 in (l.strip() for l in open(filename6) if not l.startswith('#') and l.strip()):
-     r.sadd('ips', line6)
+url = "https://www.talosintelligence.com/documents/ip-blacklist"
+respuesta = urllib.request.urlopen(url)
+contenido = respuesta.read()
+file = open("./app/file/talos", "w")
+file.write(str(contenido))
+file.close()
+filename = "./app/file/talos"
+for line in (l.strip() for l in open(filename) if not l.startswith('#') and l.strip()):
+     r.sadd('ips', line)
 
 # Myip.ms
-url7 = "https://myip.ms/files/blacklist/general/latest_blacklist.txt"
-respuesta7 = urllib.request.urlopen(url7)
-contenido7 = respuesta7.read()
-file7 = open("./app/file/myip", "w")
-file7.write(str(contenido7))
-file7.close()
-filename7 = "./app/file/myip"
-for line7 in (l.strip() for l in open(filename7) if not l.startswith('#') and l.strip()):
-     r.sadd('ips', line7)
+url = "https://myip.ms/files/blacklist/general/latest_blacklist.txt"
+respuesta = urllib.request.urlopen(url)
+contenido = respuesta.read()
+file = open("./app/file/myip", "w")
+file.write(str(contenido))
+file.close()
+filename = "./app/file/myip"
+for line in (l.strip() for l in open(filename) if not l.startswith('#') and l.strip()):
+     r.sadd('ips', line)
 
 # Esportar lista de ips desde Redis al archivo de testo plano que se publicara en la web
 ips = r.smembers('ips')
