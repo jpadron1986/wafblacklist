@@ -10,6 +10,12 @@ services:
 
     volumes:
       - ./app:/usr/share/nginx/html
+  
+  redis:
+    image: redis
+    container_name: bd
+    ports:
+      - "6379"
 
 volumes:
   app:
